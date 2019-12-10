@@ -1,0 +1,21 @@
+﻿@model WebApplication3.Repositories.Entities.TransactionEntity
+@{
+    ViewData["Title"] = "Crédito";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Account" class="col-form-label"></label>
+        <input asp-for="Account" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Value" class="col-form-label"></label>
+        <input asp-for="Value" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
