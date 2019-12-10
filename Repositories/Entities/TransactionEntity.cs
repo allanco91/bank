@@ -26,5 +26,9 @@ namespace WebApplication3.Repositories.Entities
         /// Define se é débito=true ou crédito=false o valor
         /// </summary>
         public bool IsDebit { get; set; }
+        /// <summary>
+        /// Data da transação
+        /// </summary>
+        public DateTime Date { get; set; }
     }
 }

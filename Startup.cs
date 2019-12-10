@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using WebApplication3.Repositories;
+using WebApplication3.Repositories.Services;
 
 namespace WebApplication3
 {
@@ -27,6 +28,8 @@ namespace WebApplication3
             services.AddControllersWithViews();
 
             services.AddScoped<ITransactionsRepository, TransactionsRepository>();
+
+            services.AddScoped<TransactionsService>();
 
             services.AddScoped<IMongoDatabase>( s => {
 

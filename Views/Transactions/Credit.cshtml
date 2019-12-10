@@ -5,8 +5,10 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-action="Create">
+<form asp-action="Credit">
     <div class="form-group">
+        <input type="hidden" asp-for="IsDebit" value="false" />
+        <input type="hidden" asp-for="Date" value="@DateTime.Now" />
         <label asp-for="Account" class="col-form-label"></label>
         <input asp-for="Account" class="form-control" />
     </div>

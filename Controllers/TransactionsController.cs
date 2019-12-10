@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Repositories.Entities;
 using WebApplication3.Repositories;
+using WebApplication3.Repositories.Services;
 
 namespace WebApplication3.Controllers
 {
     public class TransactionsController : Controller
     {
-        private readonly ITransactionsRepository _transactionsRepository;
+        private readonly TransactionsService _transactionsService;
 
-        public TransactionsController(ITransactionsRepository transactionsRepository)
+        public TransactionsController(TransactionsService transactionsService)
         {
-            _transactionsRepository = transactionsRepository;
+            _transactionsService = transactionsService;
         }
                 
         public IActionResult Index()
@@ -22,23 +23,39 @@ namespace WebApplication3.Controllers
             return View();
         }
 
-        public IActionResult Create()
+        public IActionResult Credit()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(TransactionEntity obj)
+        public IActionResult Credit(TransactionEntity obj)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
-            obj.IsDebit = false;
+            _transactionsService.Credit(obj);
+            return RedirectToAction(nameof(Index));
+        }
 
-            _transactionsRepository.Insert(obj);
+        public IActionResult Debit()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Debit(TransactionEntity obj)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            _transactionsService.Debit(obj);
             return RedirectToAction(nameof(Index));
         }
     }
