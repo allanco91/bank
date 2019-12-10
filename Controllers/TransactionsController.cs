@@ -61,6 +61,16 @@ namespace WebApplication3.Controllers
             return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", Balance = _transactionsService.Balance(obj.Account) });
         }
 
+        public IActionResult AccountExtract()
+        {
+            return View();
+        }
+
+        public IActionResult MonthlyReport()
+        {
+            return View();
+        }
+
         public IActionResult Success(string message, double balance)
         {
             var viewModel = new SuccessViewModel

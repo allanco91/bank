@@ -1,0 +1,22 @@
+﻿@model WebApplication3.Repositories.Entities.TransactionEntity
+@{
+    ViewData["Title"] = "Montly Report";
+    //int year = int.Parse(ViewData["year"] as string);
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="MontlyReport">
+    <div class="form-group">
+        <label asp-for="Account" class="col-form-label"></label>
+        <input asp-for="Account" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp="year" class="col-form-label"></label>
+        <input type="number" name="year" class="form-control" value=@ViewData["year"]/>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Show" class="btn btn-primary" />
+    </div>
+</form>
+
