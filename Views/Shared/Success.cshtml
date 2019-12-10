@@ -1,0 +1,11 @@
+﻿@model SuccessViewModel
+@{
+    ViewData["Title"] = "Success";
+}
+
+<h1 class="text-success">@ViewData["Title"]</h1>
+<h2 class="text-primary">@Model.Message</h2>
+
+<p>
+    <strong>New balance:</strong> <code>@Model.Balance</code>
+</p>
