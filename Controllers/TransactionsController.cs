@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Repositories.Entities;
 using WebApplication3.Repositories;
 using WebApplication3.Repositories.Services;
+using WebApplication3.Models;
+using System.Diagnostics;
 
 namespace WebApplication3.Controllers
 {
@@ -34,11 +36,11 @@ namespace WebApplication3.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(obj);
             }
 
             _transactionsService.Credit(obj);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", Balance = _transactionsService.Balance(obj.Account) } );
         }
 
         public IActionResult Debit()
@@ -56,7 +58,29 @@ namespace WebApplication3.Controllers
             }
 
             _transactionsService.Debit(obj);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", Balance = _transactionsService.Balance(obj.Account) });
+        }
+
+        public IActionResult Success(string message, double balance)
+        {
+            var viewModel = new SuccessViewModel
+            {
+                Message = message,
+                Balance = balance
+            };
+
+            return View(viewModel);
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+
+            return View(viewModel);
         }
     }
 }

@@ -26,6 +26,15 @@ namespace WebApplication3.Repositories.Services
             _repo.Insert(obj);
         }
 
+        public double Balance(int account)
+        {
+            var transactions = from t in _repo.List() select t;
+            double credits = transactions.Where(t => t.Account == account && !t.IsDebit).Sum(t => t.Value);
+            double debits = transactions.Where(t => t.Account == account && t.IsDebit).Sum(t => t.Value);
+
+            return credits - debits;
+        }
+
         public List<TransactionEntity> AccountExtract(int account)
         {
             var transactions = from t in _repo.List() select t;
