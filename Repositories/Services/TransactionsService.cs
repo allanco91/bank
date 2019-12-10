@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication3.Repositories;
 using WebApplication3.Repositories.Entities;
 
 namespace WebApplication3.Repositories.Services
@@ -32,6 +31,16 @@ namespace WebApplication3.Repositories.Services
             var transactions = from t in _repo.List() select t;
 
             return transactions.Where(t => t.Account == account).OrderBy(t => t.Id).ToList();
+        }
+
+        public List<IGrouping<int, TransactionEntity>> MonthlyReport(int account, int year)
+        {
+            var transactions = from t in _repo.List() select t;
+
+            transactions.Where(t => t.Account == account);
+            transactions.Where(t => t.Date.Year == year);
+
+            return transactions.OrderBy(t => t.Date).GroupBy(t => t.Date.Month).ToList();
         }
     }
 }
