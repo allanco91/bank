@@ -40,7 +40,7 @@ namespace WebApplication3.Controllers
             }
 
             _transactionsRepository.Insert(obj);
-            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", Balance = _transactionsRepository.Balance(obj.Account) });
+            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", obj.Value, Balance = _transactionsRepository.Balance(obj.Account) });
         }
 
         public IActionResult Debit()
@@ -57,8 +57,16 @@ namespace WebApplication3.Controllers
                 return View();
             }
 
-            _transactionsRepository.Insert(obj);
-            return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", Balance = _transactionsRepository.Balance(obj.Account) });
+            try
+            {
+                _transactionsRepository.Debit(obj);
+                return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", obj.Value, Balance = _transactionsRepository.Balance(obj.Account) });
+            }
+            catch (ApplicationException e)
+            {
+                return RedirectToAction(nameof(Error), new { e.Message });
+            }
+            
         }
 
         public IActionResult IndexAccountExtract()
@@ -85,11 +93,12 @@ namespace WebApplication3.Controllers
             return View();
         }
 
-        public IActionResult Success(string message, double balance)
+        public IActionResult Success(string message, double value, double balance)
         {
             var viewModel = new SuccessViewModel
             {
                 Message = message,
+                Value = value,
                 Balance = balance
             };
 

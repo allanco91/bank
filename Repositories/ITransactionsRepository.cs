@@ -7,6 +7,7 @@ namespace WebApplication3.Repositories
     {
         TransactionEntity Get(string id);
         void Insert(TransactionEntity transaction);
+        void Debit(TransactionEntity transaction);
         List<TransactionEntity> List();
         double Balance(int account);
         List<TransactionEntity> Extract(int account);

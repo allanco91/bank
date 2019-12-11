@@ -20,12 +20,11 @@ namespace WebApplication3.Repositories
         {
             var collection = GetCollection();
             collection.InsertOne(transaction);
-
         }
 
         public void Debit(TransactionEntity transaction)
         {
-            if (Get(transaction.Id) == null)
+            if (FindByAccount(transaction.Account) == null)
             {
                 throw new NotFoundException("Account not found");
             }
@@ -35,8 +34,10 @@ namespace WebApplication3.Repositories
             }
             if (Balance(transaction.Account) < transaction.Value)
             {
-                Insert(transaction);
+                throw new TransactionException("Balance must be greater than amount to be debited");
             }
+            
+            Insert(transaction);
         }
 
         private IMongoCollection<TransactionEntity> GetCollection()
@@ -54,6 +55,12 @@ namespace WebApplication3.Repositories
         {
             var collection = GetCollection();
             return collection.Find(a => a.Id == id).FirstOrDefault();
+        }
+
+        private TransactionEntity FindByAccount(int account)
+        {
+            var collection = GetCollection();
+            return collection.Find(a => a.Account == account).FirstOrDefault();
         }
 
         public double Balance(int account)
