@@ -13,13 +13,13 @@ namespace WebApplication3.Controllers
 {
     public class TransactionsController : Controller
     {
-        private readonly TransactionsService _transactionsService;
+        private readonly ITransactionsRepository _transactionsRepository;
 
-        public TransactionsController(TransactionsService transactionsService)
+        public TransactionsController(ITransactionsRepository transactionsRepository)
         {
-            _transactionsService = transactionsService;
+            _transactionsRepository = transactionsRepository;
         }
-                
+
         public IActionResult Index()
         {
             return View();
@@ -39,8 +39,8 @@ namespace WebApplication3.Controllers
                 return View(obj);
             }
 
-            _transactionsService.AddCredit(obj);
-            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", Balance = _transactionsService.Balance(obj.Account) } );
+            _transactionsRepository.Insert(obj);
+            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", Balance = _transactionsRepository.Balance(obj.Account) });
         }
 
         public IActionResult Debit()
@@ -57,16 +57,30 @@ namespace WebApplication3.Controllers
                 return View();
             }
 
-            _transactionsService.AddDebit(obj);
-            return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", Balance = _transactionsService.Balance(obj.Account) });
+            _transactionsRepository.Insert(obj);
+            return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", Balance = _transactionsRepository.Balance(obj.Account) });
         }
 
-        public IActionResult AccountExtract()
+        public IActionResult IndexAccountExtract()
         {
             return View();
         }
 
-        public IActionResult MonthlyReport()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AccountExtract(int account)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            ViewData["account"] = account;
+            var model = _transactionsRepository.Extract(account);
+            return View(model);
+        }
+
+        public IActionResult IndexMonthlyReport()
         {
             return View();
         }

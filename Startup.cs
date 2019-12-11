@@ -29,8 +29,6 @@ namespace WebApplication3
 
             services.AddScoped<ITransactionsRepository, TransactionsRepository>();
 
-            services.AddScoped<TransactionsService>();
-
             services.AddScoped<IMongoDatabase>( s => {
 
                 string username = "root";

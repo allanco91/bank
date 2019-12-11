@@ -4,38 +4,78 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication3.Repositories.Entities;
+using WebApplication3.Repositories.Exceptions;
 
 namespace WebApplication3.Repositories
 {
     public class TransactionsRepository : ITransactionsRepository
     {
         private readonly IMongoDatabase mMongoDatabase;
-        public TransactionsRepository( IMongoDatabase mongoDatabase )
+        public TransactionsRepository(IMongoDatabase mongoDatabase)
         {
             mMongoDatabase = mongoDatabase;
         }
 
-        public void Insert( TransactionEntity transaction )
+        public void Insert(TransactionEntity transaction)
         {
             var collection = GetCollection();
-            collection.InsertOne( transaction );
+            collection.InsertOne(transaction);
+
+        }
+
+        public void Debit(TransactionEntity transaction)
+        {
+            if (Get(transaction.Id) == null)
+            {
+                throw new NotFoundException("Account not found");
+            }
+            if (!transaction.IsDebit)
+            {
+                throw new TransactionException("Operation must be Debit");
+            }
+            if (Balance(transaction.Account) < transaction.Value)
+            {
+                Insert(transaction);
+            }
         }
 
         private IMongoCollection<TransactionEntity> GetCollection()
         {
-            return mMongoDatabase.GetCollection<TransactionEntity>( "Items" );
+            return mMongoDatabase.GetCollection<TransactionEntity>("Items");
         }
 
         public List<TransactionEntity> List()
         {
             var collection = GetCollection();
-            return collection.Find( a => true ).ToList();
+            return collection.Find(a => true).ToList();
         }
 
-        public TransactionEntity Get( string id )
+        public TransactionEntity Get(string id)
         {
             var collection = GetCollection();
-            return collection.Find( a => a.Id == id ).FirstOrDefault();
+            return collection.Find(a => a.Id == id).FirstOrDefault();
+        }
+
+        public double Balance(int account)
+        {
+            return Extract(account).Sum(t => t.Value);
+        }
+
+        public List<TransactionEntity> Extract(int account)
+        {
+            return List().Where(t => t.Account == account).Select(t => new TransactionEntity
+            {
+                Id = t.Id,
+                Account = t.Account,
+                Date = t.Date,
+                IsDebit = t.IsDebit,
+                Value = t.IsDebit ? t.Value * -1 : t.Value
+            }).ToList();
+        }
+
+        public List<TransactionEntity> MonthlyExtract(int account, int year)
+        {
+            return null;
         }
     }
 }
