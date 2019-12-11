@@ -36,7 +36,7 @@ namespace WebApplication3.Repositories
             {
                 throw new TransactionException("Balance must be greater than amount to be debited");
             }
-            
+
             Insert(transaction);
         }
 
@@ -70,19 +70,27 @@ namespace WebApplication3.Repositories
 
         public List<TransactionEntity> Extract(int account)
         {
-            return List().Where(t => t.Account == account).Select(t => new TransactionEntity
-            {
-                Id = t.Id,
-                Account = t.Account,
-                Date = t.Date,
-                IsDebit = t.IsDebit,
-                Value = t.IsDebit ? t.Value * -1 : t.Value
-            }).ToList();
+            var transactions = from t in List() select t;
+
+            return transactions.Where(t => t.Account == account)
+                .Select(t => new TransactionEntity
+                {
+                    Id = t.Id,
+                    Account = t.Account,
+                    Date = t.Date,
+                    IsDebit = t.IsDebit,
+                    Value = t.IsDebit ? t.Value * -1 : t.Value
+                }).ToList();
         }
 
-        public List<TransactionEntity> MonthlyExtract(int account, int year)
+        public List<IGrouping<int, TransactionEntity>> MonthlyReport(int account, int year)
         {
-            return null;
+            var transactions = from t in List() select t;
+
+            transactions.Where(t => t.Account == account);
+            transactions.Where(t => t.Date.Year == year);
+
+            return transactions.OrderBy(t => t.Date).GroupBy(t => t.Date.Month).ToList();
         }
     }
 }
