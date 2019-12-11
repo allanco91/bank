@@ -16,30 +16,38 @@ namespace WebApplication3.Repositories.Services
             _repo = repository;
         }
 
-        public void Credit(TransactionEntity obj)
+        public void AddCredit(TransactionEntity obj)
         {
             _repo.Insert(obj);
         }
 
-        public void Debit(TransactionEntity obj)
+        public void AddDebit(TransactionEntity obj)
         {
             _repo.Insert(obj);
+        }
+
+        public double CreditBalance(int account)
+        {
+            var transactions = from t in _repo.List() select t;
+            return transactions.Where(t => t.Account == account && !t.IsDebit).Sum(t => t.Value);
+        }
+
+        public double DebitBalance(int account)
+        {
+            var transactions = from t in _repo.List() select t;
+            return transactions.Where(t => t.Account == account && t.IsDebit).Sum(t => t.Value);
         }
 
         public double Balance(int account)
-        {
-            var transactions = from t in _repo.List() select t;
-            double credits = transactions.Where(t => t.Account == account && !t.IsDebit).Sum(t => t.Value);
-            double debits = transactions.Where(t => t.Account == account && t.IsDebit).Sum(t => t.Value);
-
-            return credits - debits;
+        {   
+            return CreditBalance(account) - DebitBalance(account);
         }
 
         public List<TransactionEntity> AccountExtract(int account)
         {
             var transactions = from t in _repo.List() select t;
 
-            return transactions.Where(t => t.Account == account).OrderBy(t => t.Id).ToList();
+            return transactions.Where(t => t.Account == account).OrderBy(t => t.Date).ToList();
         }
 
         public List<IGrouping<int, TransactionEntity>> MonthlyReport(int account, int year)

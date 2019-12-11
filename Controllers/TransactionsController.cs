@@ -39,7 +39,7 @@ namespace WebApplication3.Controllers
                 return View(obj);
             }
 
-            _transactionsService.Credit(obj);
+            _transactionsService.AddCredit(obj);
             return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", Balance = _transactionsService.Balance(obj.Account) } );
         }
 
@@ -57,7 +57,7 @@ namespace WebApplication3.Controllers
                 return View();
             }
 
-            _transactionsService.Debit(obj);
+            _transactionsService.AddDebit(obj);
             return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", Balance = _transactionsService.Balance(obj.Account) });
         }
 

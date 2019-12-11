@@ -24,7 +24,7 @@ namespace WebApplication3.Repositories.Entities
         /// Valor da transação
         /// </summary>
         [Required(ErrorMessage = "{0} is required")]
-        [Range(1.0, 50000.0, ErrorMessage = "{0} value to credit/debit must be greater than {1} and less than {2]")]
+        [Range(1.0, 50000.0, ErrorMessage = "{0} value to credit/debit must be greater than {1} and less than {2}")]
         [DisplayFormat(DataFormatString = "{0:F2}")]
         public double Value { get; set; }
         /// <summary>
