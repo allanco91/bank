@@ -46,7 +46,7 @@ namespace WebApplication3
                 MongoClientSettings settings = new MongoClientSettings();
                 // comment this line below if your mongo doesn't run on secured mode
                 settings.Credentials = credentials;
-                String mongoHost = Configuration["DOTNET_RUNNING_IN_CONTAINER"] != null ? "mongo" : "localhost"; // <== weblocal use 'locahost', container use 'img name'
+                String mongoHost = Configuration["DOTNET_RUNNING_IN_CONTAINER"] != null ? "mongo" : "localhost"; // <== weblocal 'locahost', container 'mongo'
                 MongoServerAddress address = new MongoServerAddress(mongoHost);
                 settings.Server = address;
 

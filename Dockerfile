@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-env
 WORKDIR /src
-COPY ["*.csproj", ""]
+COPY *.csproj .
 RUN dotnet restore 
 COPY . .
 WORKDIR /src
