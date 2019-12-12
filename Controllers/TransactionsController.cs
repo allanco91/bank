@@ -32,15 +32,15 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Credit(TransactionEntity obj)
+        public async Task<IActionResult> Credit(TransactionEntity obj)
         {
             if (!ModelState.IsValid)
             {
                 return View(obj);
             }
 
-            _transactionsRepository.Insert(obj);
-            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", obj.Value, Balance = _transactionsRepository.Balance(obj.Account) });
+            await _transactionsRepository.InsertAsync(obj);
+            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", obj.Value, Balance = await _transactionsRepository.BalanceAsync(obj.Account) });
         }
 
         public IActionResult Debit()
@@ -50,7 +50,7 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Debit(TransactionEntity obj)
+        public async Task<IActionResult> Debit(TransactionEntity obj)
         {
             if (!ModelState.IsValid)
             {
@@ -59,8 +59,8 @@ namespace WebApplication3.Controllers
 
             try
             {
-                _transactionsRepository.Debit(obj);
-                return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", obj.Value, Balance = _transactionsRepository.Balance(obj.Account) });
+                await _transactionsRepository.DebitAsync(obj);
+                return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", obj.Value, Balance = await _transactionsRepository.BalanceAsync(obj.Account) });
             }
             catch (ApplicationException e)
             {
@@ -76,13 +76,13 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AccountExtract(int? account)
+        public async Task<IActionResult> AccountExtract(int? account)
         {
             if (!account.HasValue)
                 return RedirectToAction(nameof(Error), new { message = "Account not provided" });
 
             ViewData["account"] = account;
-            var model = _transactionsRepository.Extract(account);
+            var model = await _transactionsRepository.ExtractAsync(account);
             return View(model);
         }
 
@@ -93,7 +93,7 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult MonthlyReport(int? account, int? year)
+        public async Task<IActionResult> MonthlyReport(int? account, int? year)
         {
             if (!account.HasValue)
                 return RedirectToAction(nameof(Error), new { message = "Account not provided" });
@@ -103,7 +103,7 @@ namespace WebApplication3.Controllers
 
             ViewData["account"] = account;
             ViewData["year"] = year;
-            var model = _transactionsRepository.MonthlyReport(account, year);
+            var model = await _transactionsRepository.MonthlyReportAsync(account, year);
             return View(model);
         }
 

@@ -17,13 +17,13 @@ namespace WebApplication3.Repositories
             mMongoDatabase = mongoDatabase;
         }
 
-        public void Insert(TransactionEntity transaction)
+        public async Task InsertAsync(TransactionEntity transaction)
         {
             var collection = GetCollection();
-            collection.InsertOne(transaction);
+            await collection.InsertOneAsync(transaction);
         }
 
-        public void Debit(TransactionEntity transaction)
+        public async Task DebitAsync(TransactionEntity transaction)
         {
             if (FindByAccount(transaction.Account) == null)
             {
@@ -33,12 +33,12 @@ namespace WebApplication3.Repositories
             {
                 throw new TransactionException("Operation must be Debit");
             }
-            if (Balance(transaction.Account) < transaction.Value)
+            if (await BalanceAsync(transaction.Account) < transaction.Value)
             {
                 throw new TransactionException("Balance must be greater than amount to be debited");
             }
 
-            Insert(transaction);
+            await InsertAsync(transaction);
         }
 
         private IMongoCollection<TransactionEntity> GetCollection()
@@ -46,21 +46,21 @@ namespace WebApplication3.Repositories
             return mMongoDatabase.GetCollection<TransactionEntity>("Items");
         }
 
-        public List<TransactionEntity> List()
+        public async Task<List<TransactionEntity>> ListAsync()
         {
             var collection = GetCollection();
-            return collection.Find(a => true).ToList();
+            return await collection.Find(a => true).ToListAsync();
         }
 
-        public TransactionEntity Get(string id)
+        public async Task<TransactionEntity> GetAsync(string id)
         {
             var collection = GetCollection();
-            return collection.Find(a => a.Id == id).FirstOrDefault();
+            return await collection.Find(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        private List<TransactionEntity> ListWithNegativeValues()
+        private async Task<List<TransactionEntity>> ListWithNegativeValuesAsync()
         {
-            var transactions = from t in List() select t;
+            var transactions = from t in await ListAsync() select t;
 
             return transactions.Select(t => new TransactionEntity
             {
@@ -78,23 +78,23 @@ namespace WebApplication3.Repositories
             return collection.Find(a => a.Account == account).FirstOrDefault();
         }
 
-        public double Balance(int account)
+        public async Task<double> BalanceAsync(int account)
         {
-            var transactions = from t in ListWithNegativeValues() select t;
+            var transactions = from t in await ListWithNegativeValuesAsync() select t;
 
             return transactions.Where(t => t.Account == account).Sum(t => t.Value);
         }
 
-        public List<TransactionEntity> Extract(int? account)
+        public async Task<List<TransactionEntity>> ExtractAsync(int? account)
         {
-            var transactions = from t in ListWithNegativeValues() select t;
+            var transactions = from t in await ListWithNegativeValuesAsync() select t;
 
             return transactions.Where(t => t.Account == account).ToList();
         }
 
-        public List<MonthlyReportViewModel> MonthlyReport(int? account, int? year)
+        public async Task<List<MonthlyReportViewModel>> MonthlyReportAsync(int? account, int? year)
         {
-            var transactions = from t in ListWithNegativeValues() select t;
+            var transactions = from t in await ListWithNegativeValuesAsync() select t;
 
             return transactions.Where(t => t.Account == account && t.Date.Year == year)
                 .GroupBy(g => new { g.Account, Date = new DateTime(g.Date.Year, g.Date.Month, 1) })
