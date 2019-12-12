@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication3", "WebAppli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NUnitTestProject1", "NUnitTestProject1\NUnitTestProject1.csproj", "{733C2A43-9C38-4AB8-94FE-7305330715CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTestBankApp", "..\XUnitTestBankApp\XUnitTestBankApp.csproj", "{853C8247-7FC9-47D3-B6EC-74129782C416}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{733C2A43-9C38-4AB8-94FE-7305330715CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{733C2A43-9C38-4AB8-94FE-7305330715CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{733C2A43-9C38-4AB8-94FE-7305330715CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{853C8247-7FC9-47D3-B6EC-74129782C416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{853C8247-7FC9-47D3-B6EC-74129782C416}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{853C8247-7FC9-47D3-B6EC-74129782C416}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{853C8247-7FC9-47D3-B6EC-74129782C416}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

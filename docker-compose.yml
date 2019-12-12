@@ -1,6 +1,21 @@
 # Use root/example as user/password credentials
 version: '3.1'
 services:
+  runracreview:
+    container_name: bankapp
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "57270:80"
+      - "44348:443"
+    links:
+      - mongo
+
   mongo:
     image: mongo
     restart: always
