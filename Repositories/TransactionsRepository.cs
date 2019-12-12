@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication3.Models.ViewModels;
 using WebApplication3.Repositories.Entities;
 using WebApplication3.Repositories.Exceptions;
 
@@ -57,6 +58,20 @@ namespace WebApplication3.Repositories
             return collection.Find(a => a.Id == id).FirstOrDefault();
         }
 
+        private List<TransactionEntity> ListWithNegativeValues()
+        {
+            var transactions = from t in List() select t;
+
+            return transactions.Select(t => new TransactionEntity
+            {
+                Id = t.Id,
+                Account = t.Account,
+                Date = t.Date,
+                IsDebit = t.IsDebit,
+                Value = t.IsDebit ? t.Value * -1 : t.Value
+            }).ToList();
+        }
+
         private TransactionEntity FindByAccount(int account)
         {
             var collection = GetCollection();
@@ -65,32 +80,33 @@ namespace WebApplication3.Repositories
 
         public double Balance(int account)
         {
-            return Extract(account).Sum(t => t.Value);
+            var transactions = from t in ListWithNegativeValues() select t;
+
+            return transactions.Where(t => t.Account == account).Sum(t => t.Value);
         }
 
         public List<TransactionEntity> Extract(int account)
         {
-            var transactions = from t in List() select t;
+            var transactions = from t in ListWithNegativeValues() select t;
 
-            return transactions.Where(t => t.Account == account)
-                .Select(t => new TransactionEntity
-                {
-                    Id = t.Id,
-                    Account = t.Account,
-                    Date = t.Date,
-                    IsDebit = t.IsDebit,
-                    Value = t.IsDebit ? t.Value * -1 : t.Value
-                }).ToList();
+            return transactions.Where(t => t.Account == account).ToList();
         }
 
-        public List<IGrouping<int, TransactionEntity>> MonthlyReport(int account, int year)
+        public List<MonthlyReportViewModel> MonthlyReport(int account, int year)
         {
-            var transactions = from t in List() select t;
+            var transactions = from t in ListWithNegativeValues() select t;
 
-            transactions.Where(t => t.Account == account);
-            transactions.Where(t => t.Date.Year == year);
-
-            return transactions.OrderBy(t => t.Date).GroupBy(t => t.Date.Month).ToList();
+            return transactions.Where(t => t.Account == account && t.Date.Year == year)
+                .GroupBy(g => new { g.Account, Date = new DateTime(g.Date.Year, g.Date.Month, 1) })
+                .OrderBy(t => t.Key.Date)
+                .Select(t => new MonthlyReportViewModel
+                {
+                    Account = t.Key.Account,
+                    Date = t.Key.Date,
+                    Credit = t.Where(x => !x.IsDebit).Sum(x => x.Value),
+                    Debit = t.Where(x => x.IsDebit).Sum(x => x.Value),
+                    Balance = t.Sum(x => x.Value)
+                }).ToList();
         }
     }
 }

@@ -1,5 +1,5 @@
 
-namespace WebApplication3.Models
+namespace WebApplication3.Models.ViewModels
 {
     public class ErrorViewModel
     {

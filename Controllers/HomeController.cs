@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication3.Models;
+using WebApplication3.Models.ViewModels;
 using WebApplication3.Repositories;
 using WebApplication3.Repositories.Entities;
 

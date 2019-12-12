@@ -7,6 +7,7 @@ using WebApplication3.Repositories.Entities;
 using WebApplication3.Repositories;
 using WebApplication3.Models;
 using System.Diagnostics;
+using WebApplication3.Models.ViewModels;
 
 namespace WebApplication3.Controllers
 {
@@ -90,6 +91,21 @@ namespace WebApplication3.Controllers
         public IActionResult IndexMonthlyReport()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult MonthlyReport(int account, int year)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            ViewData["account"] = account;
+            ViewData["year"] = year;
+            var model = _transactionsRepository.MonthlyReport(account, year);
+            return View(model);
         }
 
         public IActionResult Success(string message, double value, double balance)

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using WebApplication3.Models.ViewModels;
 using WebApplication3.Repositories.Entities;
 
 namespace WebApplication3.Repositories
@@ -12,6 +12,6 @@ namespace WebApplication3.Repositories
         List<TransactionEntity> List();
         double Balance(int account);
         List<TransactionEntity> Extract(int account);
-        List<IGrouping<int, TransactionEntity>> MonthlyReport(int account, int year);
+        List<MonthlyReportViewModel> MonthlyReport(int account, int year);
     }
 }

@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using WebApplication3.Repositories;
-using WebApplication3.Repositories.Services;
 
 namespace WebApplication3
 {
