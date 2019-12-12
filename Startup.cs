@@ -14,7 +14,7 @@ namespace WebApplication3
 {
     public class Startup
     {
-        public Startup( IConfiguration configuration )
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -22,23 +22,24 @@ namespace WebApplication3
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices( IServiceCollection services )
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
 
             services.AddScoped<ITransactionsRepository, TransactionsRepository>();
 
-            services.AddScoped<IMongoDatabase>( s => {
+            services.AddScoped<IMongoDatabase>(s =>
+            {
 
                 string username = "root";
                 string password = "123456";
                 string mongoDbAuthMechanism = "SCRAM-SHA-1";
                 MongoInternalIdentity internalIdentity =
-                          new MongoInternalIdentity( "admin", username );
-                PasswordEvidence passwordEvidence = new PasswordEvidence( password );
+                          new MongoInternalIdentity("admin", username);
+                PasswordEvidence passwordEvidence = new PasswordEvidence(password);
                 MongoCredential mongoCredential =
-                     new MongoCredential( mongoDbAuthMechanism,
-                             internalIdentity, passwordEvidence );
+                     new MongoCredential(mongoDbAuthMechanism,
+                             internalIdentity, passwordEvidence);
                 List<MongoCredential> credentials =
                            new List<MongoCredential>() { mongoCredential };
 
@@ -47,25 +48,25 @@ namespace WebApplication3
                 // comment this line below if your mongo doesn't run on secured mode
                 settings.Credentials = credentials;
                 String mongoHost = "mongo"; // <== weblocal use 'locahost', container use 'img name'
-                MongoServerAddress address = new MongoServerAddress( mongoHost );
+                MongoServerAddress address = new MongoServerAddress(mongoHost);
                 settings.Server = address;
 
-                MongoDB.Driver.MongoClient client = new MongoDB.Driver.MongoClient( settings );
+                MongoDB.Driver.MongoClient client = new MongoDB.Driver.MongoClient(settings);
 
-                return client.GetDatabase( "bank" );
-            } );
+                return client.GetDatabase("bank");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure( IApplicationBuilder app, IWebHostEnvironment env )
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if ( env.IsDevelopment() )
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler( "/Home/Error" );
+                app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
 
@@ -73,12 +74,12 @@ namespace WebApplication3
 
             app.UseAuthorization();
 
-            app.UseEndpoints( endpoints =>
-             {
-                 endpoints.MapControllerRoute(
-                     name: "default",
-                     pattern: "{controller=Home}/{action=Index}/{id?}" );
-             } );
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
