@@ -76,12 +76,10 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AccountExtract(int account)
+        public IActionResult AccountExtract(int? account)
         {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
+            if (!account.HasValue)
+                return RedirectToAction(nameof(Error), new { message = "Account not provided" });
 
             ViewData["account"] = account;
             var model = _transactionsRepository.Extract(account);
@@ -95,12 +93,13 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult MonthlyReport(int account, int year)
+        public IActionResult MonthlyReport(int? account, int? year)
         {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
+            if (!account.HasValue)
+                return RedirectToAction(nameof(Error), new { message = "Account not provided" });
+
+            if (!year.HasValue)
+                return RedirectToAction(nameof(Error), new { message = "Year not provided" });
 
             ViewData["account"] = account;
             ViewData["year"] = year;

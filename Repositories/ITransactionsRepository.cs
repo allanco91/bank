@@ -11,7 +11,7 @@ namespace WebApplication3.Repositories
         void Debit(TransactionEntity transaction);
         List<TransactionEntity> List();
         double Balance(int account);
-        List<TransactionEntity> Extract(int account);
-        List<MonthlyReportViewModel> MonthlyReport(int account, int year);
+        List<TransactionEntity> Extract(int? account);
+        List<MonthlyReportViewModel> MonthlyReport(int? account, int? year);
     }
 }

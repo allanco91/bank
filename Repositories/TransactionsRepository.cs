@@ -85,14 +85,14 @@ namespace WebApplication3.Repositories
             return transactions.Where(t => t.Account == account).Sum(t => t.Value);
         }
 
-        public List<TransactionEntity> Extract(int account)
+        public List<TransactionEntity> Extract(int? account)
         {
             var transactions = from t in ListWithNegativeValues() select t;
 
             return transactions.Where(t => t.Account == account).ToList();
         }
 
-        public List<MonthlyReportViewModel> MonthlyReport(int account, int year)
+        public List<MonthlyReportViewModel> MonthlyReport(int? account, int? year)
         {
             var transactions = from t in ListWithNegativeValues() select t;
 
