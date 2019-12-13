@@ -9,9 +9,9 @@ namespace WebApplication3.Repositories
     {
         Task<TransactionEntity> GetAsync(string id);
         Task InsertAsync(TransactionEntity transaction);
-        Task DebitAsync(TransactionEntity transaction);
         Task<List<TransactionEntity>> ListAsync();
         Task<double> BalanceAsync(int account);
+        Task<TransactionEntity> FindByAccountAsync(int account);
         Task<List<TransactionEntity>> ExtractAsync(int? account);
         Task<List<MonthlyReportViewModel>> MonthlyReportAsync(int? account, int? year);
     }

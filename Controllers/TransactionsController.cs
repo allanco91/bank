@@ -8,6 +8,7 @@ using WebApplication3.Repositories;
 using WebApplication3.Models;
 using System.Diagnostics;
 using WebApplication3.Models.ViewModels;
+using WebApplication3.Repositories.Exceptions;
 
 namespace WebApplication3.Controllers
 {
@@ -59,14 +60,27 @@ namespace WebApplication3.Controllers
 
             try
             {
-                await _transactionsRepository.DebitAsync(obj);
+                if (await _transactionsRepository.FindByAccountAsync(obj.Account) == null)
+                {
+                    throw new NotFoundException("Account not found");
+                }
+                if (!obj.IsDebit)
+                {
+                    throw new TransactionException("Operation must be Debit");
+                }
+                if (await _transactionsRepository.BalanceAsync(obj.Account) < obj.Value)
+                {
+                    throw new TransactionException("Balance must be greater than amount to be debited");
+                }
+
+                await _transactionsRepository.InsertAsync(obj);
                 return RedirectToAction(nameof(Success), new { Message = "Successfully debited credits", obj.Value, Balance = await _transactionsRepository.BalanceAsync(obj.Account) });
             }
             catch (ApplicationException e)
             {
                 return RedirectToAction(nameof(Error), new { e.Message });
             }
-            
+
         }
 
         public IActionResult IndexAccountExtract()

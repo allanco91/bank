@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-env
 WORKDIR /src
-#Copia todos os projetos e restaura as camadas
+#Copia todos os projetos e restaura as dependencias/ferramentas
 COPY *.csproj .
 RUN dotnet restore 
 #Copia o resto dos arquivos

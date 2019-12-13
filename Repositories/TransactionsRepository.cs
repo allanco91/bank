@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication3.Models.ViewModels;
 using WebApplication3.Repositories.Entities;
-using WebApplication3.Repositories.Exceptions;
 
 namespace WebApplication3.Repositories
 {
@@ -21,24 +20,6 @@ namespace WebApplication3.Repositories
         {
             var collection = GetCollection();
             await collection.InsertOneAsync(transaction);
-        }
-
-        public async Task DebitAsync(TransactionEntity transaction)
-        {
-            if (FindByAccount(transaction.Account) == null)
-            {
-                throw new NotFoundException("Account not found");
-            }
-            if (!transaction.IsDebit)
-            {
-                throw new TransactionException("Operation must be Debit");
-            }
-            if (await BalanceAsync(transaction.Account) < transaction.Value)
-            {
-                throw new TransactionException("Balance must be greater than amount to be debited");
-            }
-
-            await InsertAsync(transaction);
         }
 
         private IMongoCollection<TransactionEntity> GetCollection()
@@ -72,10 +53,10 @@ namespace WebApplication3.Repositories
             }).ToList();
         }
 
-        private TransactionEntity FindByAccount(int account)
+        public async Task<TransactionEntity> FindByAccountAsync(int account)
         {
             var collection = GetCollection();
-            return collection.Find(a => a.Account == account).FirstOrDefault();
+            return await collection.Find(a => a.Account == account).FirstOrDefaultAsync();
         }
 
         public async Task<double> BalanceAsync(int account)
