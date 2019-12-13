@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Repositories.Entities;
 using WebApplication3.Repositories;
-using WebApplication3.Models;
 using System.Diagnostics;
 using WebApplication3.Models.ViewModels;
 using WebApplication3.Repositories.Exceptions;
@@ -35,13 +34,25 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Credit(TransactionEntity obj)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(obj);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return View(obj);
+                }
 
-            await _transactionsRepository.InsertAsync(obj);
-            return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", obj.Value, Balance = await _transactionsRepository.BalanceAsync(obj.Account) });
+                if (obj.IsDebit)
+                {
+                    throw new TransactionException("Operation must be Credit");
+                }
+
+                await _transactionsRepository.InsertAsync(obj);
+                return RedirectToAction(nameof(Success), new { Message = "Successfully inserted credits", obj.Value, Balance = await _transactionsRepository.BalanceAsync(obj.Account) });
+            }
+            catch (ApplicationException e)
+            {
+                return RedirectToAction(nameof(Error), new { e.Message });
+            }
         }
 
         public IActionResult Debit()
@@ -92,12 +103,22 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AccountExtract(int? account)
         {
-            if (!account.HasValue)
-                return RedirectToAction(nameof(Error), new { message = "Account not provided" });
+            try
+            {
+                if (!account.HasValue)
+                    return RedirectToAction(nameof(Error), new { message = "Account not provided" });
 
-            ViewData["account"] = account;
-            var model = await _transactionsRepository.ExtractAsync(account);
-            return View(model);
+                if (await _transactionsRepository.FindByAccountAsync(account.Value) == null)
+                    throw new NotFoundException("Account not found");
+
+                    ViewData["account"] = account;
+                var model = await _transactionsRepository.ExtractAsync(account);
+                return View(model);
+            }
+            catch (ApplicationException e)
+            {
+                return RedirectToAction(nameof(Error), new { e.Message });
+            }
         }
 
         public IActionResult IndexMonthlyReport()
@@ -109,16 +130,26 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MonthlyReport(int? account, int? year)
         {
-            if (!account.HasValue)
-                return RedirectToAction(nameof(Error), new { message = "Account not provided" });
+            try
+            {
+                if (!account.HasValue)
+                    return RedirectToAction(nameof(Error), new { message = "Account not provided" });
 
-            if (!year.HasValue)
-                return RedirectToAction(nameof(Error), new { message = "Year not provided" });
+                if (!year.HasValue)
+                    return RedirectToAction(nameof(Error), new { message = "Year not provided" });
 
-            ViewData["account"] = account;
-            ViewData["year"] = year;
-            var model = await _transactionsRepository.MonthlyReportAsync(account, year);
-            return View(model);
+                if (await _transactionsRepository.FindByAccountAsync(account.Value) == null)
+                    throw new NotFoundException("Account not found");
+
+                ViewData["account"] = account;
+                ViewData["year"] = year;
+                var model = await _transactionsRepository.MonthlyReportAsync(account, year);
+                return View(model);
+            }
+            catch (ApplicationException e)
+            {
+                return RedirectToAction(nameof(Error), new { e.Message });
+            }
         }
 
         public IActionResult Success(string message, double value, double balance)
