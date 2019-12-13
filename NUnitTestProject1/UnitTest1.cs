@@ -25,15 +25,23 @@ namespace NUnitTestProject1
 
             var controller = new TransactionsController(mok.Object);
 
-            var result = await controller.Credit(new TransactionEntity
+            TransactionEntity obj = new TransactionEntity
             {
                 Account = 1,
                 Value = 50.0,
                 IsDebit = false,
                 Date = DateTime.Now
-            });
+            };
+
+            mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(60.0));
+
+            var result = await controller.Credit(obj);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Successfully inserted credits");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(obj.Value);
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(60.0);
         }
 
         [Test]
@@ -43,16 +51,18 @@ namespace NUnitTestProject1
 
             var controller = new TransactionsController(mok.Object);
 
-
-            var result = await controller.Credit(new TransactionEntity
+            TransactionEntity obj = new TransactionEntity
             {
                 Account = 1,
                 Value = 50.0,
                 IsDebit = true,
                 Date = DateTime.Now
-            });
+            };
+
+            var result = await controller.Credit(obj);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Operation must be Credit");
         }
         #endregion
 
@@ -62,30 +72,37 @@ namespace NUnitTestProject1
         {
             var mok = new Mock<ITransactionsRepository>();
 
-            mok.Setup(a => a.FindByAccountAsync(It.IsAny<int>())).Returns(Task.FromResult(
-                new TransactionEntity
-                {
-                    Id = "test",
-                    Account = 1,
-                    Date = DateTime.Now,
-                    IsDebit = true,
-                    Value = 0.0
-                }));
+            TransactionEntity obj = new TransactionEntity
+            {
+                Id = "test",
+                Account = 1,
+                Date = DateTime.Now,
+                IsDebit = true,
+                Value = 0.0
+            };
+
+
+            mok.Setup(a => a.FindByAccountAsync(It.IsAny<int>())).Returns(Task.FromResult(obj));
 
             mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(60.0));
 
             var controller = new TransactionsController(mok.Object);
 
-            var result = await controller.Debit(new TransactionEntity
+            TransactionEntity obj2 = new TransactionEntity
             {
                 Account = 1,
                 Value = 50.0,
                 IsDebit = true,
                 Date = DateTime.Now
-            });
+            };
+
+            var result = await controller.Debit(obj2);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Successfully debited credits");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(obj2.Value);
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(60.0);
         }
 
         [Test]
@@ -104,6 +121,7 @@ namespace NUnitTestProject1
             });
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Account not found");
         }
 
         [Test]
@@ -135,6 +153,7 @@ namespace NUnitTestProject1
             });
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Balance must be greater than amount to be debited");
         }
 
         [Test]
@@ -166,6 +185,7 @@ namespace NUnitTestProject1
             });
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Operation must be Debit");
         }
         #endregion
 
@@ -203,6 +223,7 @@ namespace NUnitTestProject1
             var result = await controller.AccountExtract(1);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Account not found");
         }
 
         [Test]
@@ -215,6 +236,7 @@ namespace NUnitTestProject1
             var result = await controller.AccountExtract(null);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Account not provided");
         }
         #endregion
 
@@ -252,6 +274,7 @@ namespace NUnitTestProject1
             var result = await controller.MonthlyReport(1, 1);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Account not found");
         }
 
         [Test]
@@ -264,6 +287,7 @@ namespace NUnitTestProject1
             var result = await controller.MonthlyReport(null, 1);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Account not provided");
         }
 
         [Test]
@@ -287,6 +311,7 @@ namespace NUnitTestProject1
             var result = await controller.MonthlyReport(1, null);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Year not provided");
         }
 
         [Test]
@@ -299,6 +324,7 @@ namespace NUnitTestProject1
             var result = await controller.MonthlyReport(null, null);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Account not provided");
         }
         #endregion
     }
