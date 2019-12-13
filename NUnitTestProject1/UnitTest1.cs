@@ -17,6 +17,7 @@ namespace NUnitTestProject1
         {
         }
 
+        #region Credit tests
         [Test]
         public async Task TestCredit()
         {
@@ -32,7 +33,7 @@ namespace NUnitTestProject1
                 Date = DateTime.Now
             });
 
-            result.Should().BeRedirectAction(nameof(controller.Success));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
         }
 
         [Test]
@@ -51,9 +52,11 @@ namespace NUnitTestProject1
                 Date = DateTime.Now
             });
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
+        #endregion
 
+        #region Debit tests
         [Test]
         public async Task TestDebit()
         {
@@ -82,7 +85,7 @@ namespace NUnitTestProject1
                 Date = DateTime.Now
             });
 
-            result.Should().BeRedirectAction(nameof(controller.Success));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
         }
 
         [Test]
@@ -100,7 +103,7 @@ namespace NUnitTestProject1
                 Date = DateTime.Now
             });
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
 
         [Test]
@@ -131,7 +134,7 @@ namespace NUnitTestProject1
                 Date = DateTime.Now
             });
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
 
         [Test]
@@ -162,9 +165,11 @@ namespace NUnitTestProject1
                 Date = DateTime.Now
             });
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
+        #endregion
 
+        #region AccountExtract tests
         [Test]
         public async Task TestAccountExtract()
         {
@@ -197,7 +202,7 @@ namespace NUnitTestProject1
 
             var result = await controller.AccountExtract(1);
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
 
         [Test]
@@ -209,9 +214,11 @@ namespace NUnitTestProject1
 
             var result = await controller.AccountExtract(null);
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
+        #endregion
 
+        #region MonthlyReport tests
         [Test]
         public async Task TestMonthlyReport()
         {
@@ -244,7 +251,7 @@ namespace NUnitTestProject1
 
             var result = await controller.MonthlyReport(1, 1);
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
 
         [Test]
@@ -256,7 +263,7 @@ namespace NUnitTestProject1
 
             var result = await controller.MonthlyReport(null, 1);
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
 
         [Test]
@@ -279,7 +286,7 @@ namespace NUnitTestProject1
 
             var result = await controller.MonthlyReport(1, null);
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
 
         [Test]
@@ -291,7 +298,8 @@ namespace NUnitTestProject1
 
             var result = await controller.MonthlyReport(null, null);
 
-            result.Should().BeRedirectAction(nameof(controller.Error));
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
         }
+        #endregion
     }
 }
