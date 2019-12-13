@@ -23,6 +23,9 @@ namespace NUnitTestProject1
         {
             var mok = new Mock<ITransactionsRepository>();
 
+            mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(60.0));
+
             var controller = new TransactionsController(mok.Object);
 
             TransactionEntity obj = new TransactionEntity
@@ -34,14 +37,14 @@ namespace NUnitTestProject1
             };
 
             mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(60.0));
+                .Returns(Task.FromResult(60.0 + obj.Value));
 
             var result = await controller.Credit(obj);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Successfully inserted credits");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(obj.Value);
-            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(60.0);
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(110.0);
         }
 
         [Test]
@@ -76,9 +79,9 @@ namespace NUnitTestProject1
             {
                 Id = "test",
                 Account = 1,
-                Date = DateTime.Now,
+                Value = 60.0,
                 IsDebit = true,
-                Value = 0.0
+                Date = DateTime.Now
             };
 
 
@@ -92,17 +95,20 @@ namespace NUnitTestProject1
             TransactionEntity obj2 = new TransactionEntity
             {
                 Account = 1,
-                Value = 50.0,
+                Value = 10.0,
                 IsDebit = true,
                 Date = DateTime.Now
             };
+
+            mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(60.0 - obj2.Value));
 
             var result = await controller.Debit(obj2);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Successfully debited credits");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(obj2.Value);
-            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(60.0);
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(50.0);
         }
 
         [Test]

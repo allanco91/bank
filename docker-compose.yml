@@ -27,7 +27,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: 123456
     networks:
       - bank-network
-      
+
   mongo-express:
     image: mongo-express
     container_name: mongo-express
