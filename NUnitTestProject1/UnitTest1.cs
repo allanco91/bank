@@ -23,9 +23,6 @@ namespace NUnitTestProject1
         {
             var mok = new Mock<ITransactionsRepository>();
 
-            mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(60.0));
-
             var controller = new TransactionsController(mok.Object);
 
             TransactionEntity obj = new TransactionEntity
@@ -43,7 +40,7 @@ namespace NUnitTestProject1
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Successfully inserted credits");
-            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(obj.Value);
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(50.0);
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(110.0);
         }
 
@@ -87,9 +84,6 @@ namespace NUnitTestProject1
 
             mok.Setup(a => a.FindByAccountAsync(It.IsAny<int>())).Returns(Task.FromResult(obj));
 
-            mok.Setup(a => a.BalanceAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(60.0));
-
             var controller = new TransactionsController(mok.Object);
 
             TransactionEntity obj2 = new TransactionEntity
@@ -107,7 +101,7 @@ namespace NUnitTestProject1
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Success");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Successfully debited credits");
-            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(obj2.Value);
+            result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Value"].Should().Be(10.0);
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Balance"].Should().Be(50.0);
         }
 
