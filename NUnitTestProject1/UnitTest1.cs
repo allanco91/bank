@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using WebApplication3.Controllers;
 using WebApplication3.Repositories;
