@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using WebApplication3.Controllers;
 using WebApplication3.Repositories;
@@ -603,7 +604,7 @@ namespace NUnitTestProject1
 
             var controller = new TransactionsController(mok.Object);
 
-            var result = await controller.MonthlyReport(1, 1949);
+            var result = await controller.MonthlyReport(1, 1899);
 
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Error");
             result.Should().BeOfType<RedirectToActionResult>().Which.RouteValues["Message"].Should().Be("Year is not valid");

@@ -6,7 +6,6 @@ using WebApplication3.Repositories;
 using System.Diagnostics;
 using WebApplication3.Models.ViewModels;
 using WebApplication3.Repositories.Exceptions;
-using System.Globalization;
 
 namespace WebApplication3.Controllers
 {
@@ -165,7 +164,7 @@ namespace WebApplication3.Controllers
                 if (!year.HasValue)
                     return RedirectToAction(nameof(Error), new { message = "Year not provided" });
 
-                if (year.Value < 1950 || year.Value > DateTime.Now.Year)
+                if (year.Value < 1900 || year.Value > DateTime.Now.Year)
                     return RedirectToAction(nameof(Error), new { message = "Year is not valid" });
 
                 if (await _transactionsRepository.FindByAccountAsync(account.Value) == null)
