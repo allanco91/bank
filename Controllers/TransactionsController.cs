@@ -39,9 +39,19 @@ namespace WebApplication3.Controllers
                     return View(obj);
                 }
 
+                if (obj.Account <= 0)
+                {
+                    throw new TransactionException("Account number must be greater than 0");
+                }
+
                 if (obj.IsDebit)
                 {
                     throw new TransactionException("Operation must be Credit");
+                }
+
+                if (obj.Value <= 0)
+                {
+                    throw new TransactionException("Cannot credit account with value less than 0 or 0");
                 }
 
                 await _transactionsRepository.InsertAsync(obj);
@@ -69,14 +79,26 @@ namespace WebApplication3.Controllers
 
             try
             {
+                if (obj.Account <= 0)
+                {
+                    throw new TransactionException("Account number must be greater than 0");
+                }
+
                 if (await _transactionsRepository.FindByAccountAsync(obj.Account) == null)
                 {
                     throw new NotFoundException("Account not found");
                 }
+
                 if (!obj.IsDebit)
                 {
                     throw new TransactionException("Operation must be Debit");
                 }
+
+                if (obj.Value <= 0)
+                {
+                    throw new TransactionException("Cannot debit account with value less than 0 or 0");
+                }
+
                 if (await _transactionsRepository.BalanceAsync(obj.Account) < obj.Value)
                 {
                     throw new TransactionException("Balance must be greater than amount to be debited");
@@ -106,10 +128,13 @@ namespace WebApplication3.Controllers
                 if (!account.HasValue)
                     return RedirectToAction(nameof(Error), new { message = "Account not provided" });
 
+                if (account.Value <= 0)
+                    return RedirectToAction(nameof(Error), new { message = "Account number must be greater than 0" });
+
                 if (await _transactionsRepository.FindByAccountAsync(account.Value) == null)
                     throw new NotFoundException("Account not found");
 
-                    ViewData["account"] = account;
+                ViewData["account"] = account;
                 var model = await _transactionsRepository.ExtractAsync(account);
                 return View(model);
             }
@@ -133,8 +158,14 @@ namespace WebApplication3.Controllers
                 if (!account.HasValue)
                     return RedirectToAction(nameof(Error), new { message = "Account not provided" });
 
+                if (account.Value <= 0)
+                    return RedirectToAction(nameof(Error), new { message = "Account number must be greater than 0" });
+
                 if (!year.HasValue)
                     return RedirectToAction(nameof(Error), new { message = "Year not provided" });
+
+                if (year.Value < 1950 || year.Value > DateTime.Now.Year)
+                    return RedirectToAction(nameof(Error), new { message = "Year is not valid" });
 
                 if (await _transactionsRepository.FindByAccountAsync(account.Value) == null)
                     throw new NotFoundException("Account not found");
